@@ -1,18 +1,21 @@
 class DiscussionsController < ApplicationController
   before_action :set_discussion, only: %i[ show edit update destroy ]
+  before_action :find_channels, only: [:index, :show, :new, :edit]
+  before_action :authenticate_user!, except: [:index, :show]
 
   # GET /discussions or /discussions.json
   def index
-    @discussions = Discussion.all
+    @discussions = Discussion.all.order('created_at desc')
   end
 
   # GET /discussions/1 or /discussions/1.json
   def show
+    @discussions.Discussion.all.order('created_at desc')
   end
 
   # GET /discussions/new
   def new
-    @discussion = Discussion.new
+    @discussion = current_user.discussions.build
   end
 
   # GET /discussions/1/edit
@@ -21,7 +24,7 @@ class DiscussionsController < ApplicationController
 
   # POST /discussions or /discussions.json
   def create
-    @discussion = Discussion.new(discussion_params)
+    @discussion = current_user.discussions.build(discussion_params)
 
     respond_to do |format|
       if @discussion.save
@@ -62,6 +65,15 @@ class DiscussionsController < ApplicationController
     def set_discussion
       @discussion = Discussion.find(params[:id])
     end
+
+    def set_discussion
+      @discussion = Discussion.find(params[:id])
+    end
+
+    def find_channels
+      @channels = Channel.all.order('created_at desc')
+    end
+
 
     # Only allow a list of trusted parameters through.
     def discussion_params
